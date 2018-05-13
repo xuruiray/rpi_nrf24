@@ -820,11 +820,3 @@ class NRF24:
         self.flush_tx()
 
 
-    def init_in_my_way(self):
-        self.write_register(NRF24.EN_AA,0x01)
-        self.write_register(NRF24.EN_RXADDR,0x01)
-        self.write_register(NRF24.SETUP_RETR,0x1a)
-        self.write_register(NRF24.RF_CH,40)
-        self.write_register(NRF24.RF_SETUP,0x0f)
-        self.write_register(NRF24.CONFIG,0x0e)
-
