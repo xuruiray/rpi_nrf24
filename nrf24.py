@@ -11,30 +11,16 @@
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
 
-
-
-
+import spidev
 import RPi.GPIO as GPIO
 GPIO.setmode(GPIO.BCM)
 GPIO.setwarnings(False)
-
-# Try to Use spidev (which is faster) and then try Adafruit_BBIO
-import spidev
-ADAFRUID_BBIO_SPI = False
-
-# Use a monotonic clock if available to avoid unwanted side effects from clock
-# changes
-try:
-    from time import monotonic
-except ImportError:
-    from time import time as monotonic
-
+from time import time as monotonic
 import time
 import sys
 
 if sys.version > '3':
     long = int
-
 
 class NRF24:
     MAX_CHANNEL = 127
@@ -203,24 +189,14 @@ class NRF24:
 
     def begin(self, major, minor, ce_pin, irq_pin):
         # Initialize SPI bus
+        self.spidev = spidev.SpiDev()
+        self.spidev.open(major, minor)
+        self.spidev.bits_per_word = 8
 
-        if ADAFRUID_BBIO_SPI:
-            self.spidev = SPI(major, minor)
-            self.spidev.bpw = 8
-            try:
-                self.spidev.msh = 10000000  # Maximum supported by NRF24L01+
-            except IOError:
-                pass  # Hardware does not support this speed
-        else:
-            self.spidev = spidev.SpiDev()
-            self.spidev.open(major, minor)
-
-            self.spidev.bits_per_word = 8
-
-            try:
-                self.spidev.max_speed_hz = 10000000  # Maximum supported by NRF24L01+
-            except IOError:
-                pass  # Hardware does not support this speed
+        try:
+            self.spidev.max_speed_hz = 10000000  # Maximum supported by NRF24L01+
+        except IOError:
+            pass  # Hardware does not support this speed
 
         self.spidev.cshigh = False
         self.spidev.mode = 0
