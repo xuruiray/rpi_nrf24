@@ -55,9 +55,11 @@ try:
     for addr in addrs:
         s = SensorAddrTemp(addr['sensor_name'],addr['sensor_addr'])
         addrList.append(s)
-except requests.exceptions.ConnectTimeout:        
-    print "timeout"
-
+    except requests.exceptions.ConnectTimeout:        
+            print "timeout"
+    except requests.exceptions.ReadTimeout:
+            print "timeout"
+                
 for v in addrList:
     print v.sensor_addr
     print v.sensor_name
