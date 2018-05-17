@@ -1,10 +1,6 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
-#
-# Example program to receive packets from the radio
-#
-# João Paulo Barraca <jpbarraca@gmail.com>
-#
+
 from nrf24 import NRF24
 import time
 
