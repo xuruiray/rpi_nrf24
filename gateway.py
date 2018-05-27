@@ -10,7 +10,7 @@ import json
 #参数
 max_retry_time  = 8
 irq_wait_timeout = 0.1
-scan_interval = 0.15
+scan_interval = 0.2
 
 #设备相关
 pipes = [[0x34, 0x43, 0x10, 0x10, 0x01],[0x24,0x24,0x14,0x15,0x02], [0x13,0x25,0x35,0x46,0x04]]
@@ -30,7 +30,7 @@ radio.write_register(NRF24.CONFIG,0x0c)
 
 #API相关
 host = 'http://58.87.89.234'
-#host = 'http://192.168.1.8:8080'
+#host = 'http://192.168.1.105:8080'
 upload_url = host + '/sensor/saveData'
 downloadaddr_url = host + '/sensor/loadAllAddr'
 
@@ -54,22 +54,26 @@ class SensorAddrTemp(object):
             self.sensor_addr[i] = int(self.sensor_addr[i])
 
 try:
+    print '获取STM32集群地址'
     resp = requests.get(downloadaddr_url,timeout=25)
     addrs = json.loads(resp.text)
     for addr in addrs:
         s = SensorAddrTemp(addr['sensor_name'],addr['sensor_addr'])
         addrList.append(s)
+
 except requests.exceptions.ConnectTimeout:        
     print "timeout"
 except requests.exceptions.ReadTimeout:
     print "timeout"
 except requests.exceptions.ConnectionError:
     print "timeout"
-                
+
+
 for v in addrList:
     print v.sensor_addr
     print v.sensor_name
 
+print '开始采集数据'
 while True:
     
     #nrf24 config
@@ -105,7 +109,6 @@ while True:
         if test_data[device_num] > full_sign:
             test_data[device_num] = full_sign
         
-
     recv_buffer = []
     radio.read(recv_buffer)
  
@@ -140,5 +143,4 @@ while True:
     
         json_data = ""
         device_num = 0
-
 
